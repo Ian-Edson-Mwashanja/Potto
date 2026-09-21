@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potto | Road Monitoring Dashboard</title>
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+</head>
+<body>
+    <!-- SIDEBAR-->
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                P
+            </div>
+
+            <div>
+                <h1>Potto</h1>
+                <p>Road Intelligence</p>
+            </div>
+
+        </div>
+        <nav>
+
+            <a href="#" class="active">
+                🏠 Dashboard
+            </a>
+
+            <a href="#">
+                🗺️ Road Map
+            </a>
+
+            <a href="#">
+                🚧 Detections
+            </a>
+
+            <a href="#">
+                📊 Analytics
+            </a>
+
+        </nav>
+        <div class="system-status">
+
+            <span class="status-dot"></span>
+
+            <div>
+                <strong>System Online</strong>
+                <small>Monitoring active</small>
+            </div>
+
+        </div>
+
+    </aside>
+    <!-- MAIN CONTENT-->
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="topbar">
+            <div>
+                <h2>Road Monitoring Dashboard</h2>
+                <p>
+                    Real-time road condition intelligence
+                </p>
+                <div class="live-status">
+                    <span class="live-dot"></span>
+                    <span>LIVE MONITORING</span>
+                </div>
+                <div id="notification" class="notification">
+                    <strong>New Detection</strong>
+                    <p id="notificationMessage"></p>
+                </div>
+            </div>
+            <div class="last-update">
+
+                Last update:
+                <span id="lastUpdate">
+                    Loading...
+                </span>
+
+            </div>
+
+        </header>
+        <!-- STATISTICS -->
+        <section class="statistics">
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🚧
+                </div>
+                <div>
+                    <p>Total Detections</p>
+
+                    <h3 id="totalAnomalies">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+            <div class="stat-card severe-card">
+
+                <div class="stat-icon">
+                    🔴
+                </div>
+                <div>
+                    <p>Severe</p>
+                    <h3 id="severeAnomalies">
+                        0
+                    </h3>
+                </div>
+            </div>
+            <div class="stat-card moderate-card">
+
+                <div class="stat-icon">
+                    🟠
+                </div>
+                <div>
+                    <p>Moderate</p>
+                    <h3 id="moderateAnomalies">
+                        0
+                    </h3>
+                </div>
+            </div>
+            <div class="stat-card low-card">
+
+                <div class="stat-icon">
+                    🟢
+                </div>
+                <div>
+                    <p>Low</p>
+
+                    <h3 id="lowAnomalies">
+                        0
+                    </h3>
+
+                </div>
+            </div>
+        </section>
+        <!-- ANALYTICS-->
+        <section class="analytics-grid">
+
+            <div class="dashboard-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h2>Detection Analytics</h2>
+
+                        <p>
+                            Distribution of detected road conditions
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <canvas id="typeChart"></canvas>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h2>Severity Overview</h2>
+
+                        <p>
+                            Detections grouped by severity
+                </p>
+
+            </div>
+
+                </div>
+
+            </div>
+
+        <canvas id="severityChart"></canvas>
+
+            </div>
+
+        </section>
+        <!-- MAP -->
+        <section class="dashboard-card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>Road Condition Map</h2>
+
+                    <p>
+                        Geographic distribution of detected road conditions
+                    </p>
+
+                </div>
+                <button
+                    id="refreshButton"
+                    onclick="loadAnomalies()"
+                >
+                    🔄 Refresh
+                </button>
+            </div>
+            <div id="map"></div>
+            <!-- MAP LEGEND -->
+            <div class="map-legend">
+                <strong>Severity</strong>
+                <span>
+                    🔴 Severe
+                </span>
+
+                <span>
+                    🟠 Moderate
+                </span>
+
+                <span>
+                    🟢 Low
+                </span>
+
+            </div>
+
+        </section>
+        <!--  DETECTIONS -->
+        <section class="dashboard-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Road Anomalies</h2>
+                    <p>
+                        Latest detected road conditions
+                    </p>
+                </div>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="🔎 Search detections..."
+                    onkeyup="filterDetections()"
+                >
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Severity</th>
+                            <th>Confidence</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Device</th>
+                            <th>Detected</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detectionTable">
+                        <tr>
+                            <td colspan="7">
+                                Loading detections...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <!--PRIORITY DETECTIONS-->
+        <section class="dashboard-card">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>Repair Priority</h2>
+
+            <p>
+                Prototype priority assessment based on severity and AI confidence
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Priority</th>
+
+                    <th>Type</th>
+
+                    <th>Severity</th>
+
+                    <th>Confidence</th>
+
+                    <th>Score</th>
+
+                    <th>Location</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="priorityTable">
+
+                <tr>
+
+                    <td colspan="6">
+                        Loading priorities...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+     </section>
+    </main>
+    <!-- Leaflet JavaScript -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+    <script
+    src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+    <!-- Our JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
