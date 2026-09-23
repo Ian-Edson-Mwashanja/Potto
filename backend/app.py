@@ -53,10 +53,8 @@ def get_anomalies():
             "detected_at": str(row.detected_at),
             "device_id": row.device_id
         })
-
     cursor.close()
     connection.close()
-
     return jsonify(anomalies)
 # CREATE NEW ANOMALY
 @app.route("/api/anomalies", methods=["POST"])
@@ -344,4 +342,4 @@ def internal_error(error):
     }), 500
 # START SERVER
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

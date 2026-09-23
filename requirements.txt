@@ -8,3 +8,4 @@ joblib
 requests
 python-dotenv
 python-dotenv
+gunicorn
